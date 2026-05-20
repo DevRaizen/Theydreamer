@@ -42,15 +42,20 @@ export function useEvents() {
     return res;
   }
 
- async function updateEvent(id: any, payload: any) {
-   const cleanId = normalizeId(id);
-   return api.updateEvent(cleanId, payload);
- }
+  async function updateEvent(id: any, payload: any) {
+    const cleanId = normalizeId(id);
+    await api.updateEvent(cleanId, payload);
+    await fetchEvents();
 
- async function deleteEvent(id: any) {
-   const cleanId = normalizeId(id);
-   return api.deleteEvent(cleanId);
- }
+    // optional: return nothing or refetched list
+  }
+
+  async function deleteEvent(id: any) {
+    const cleanId = normalizeId(id);
+    const res = await api.deleteEvent(cleanId);
+    await fetchEvents(); // ← refresh list
+    return res;
+  }
 
   return {
     events,

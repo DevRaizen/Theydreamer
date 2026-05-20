@@ -3,7 +3,9 @@ const BASE = "http://localhost:3000/api";
 async function request(method: string, path: string, body?: any) {
   const res = await fetch(`${BASE}${path}`, {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
     body: body ? JSON.stringify(body) : undefined,
   });
 

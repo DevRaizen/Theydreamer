@@ -7,6 +7,7 @@ const eventRoutes = require("./routes/events");
 // CORS
 fastify.register(cors, {
   origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 });
 
 // IMPORTANT: prefix = /api

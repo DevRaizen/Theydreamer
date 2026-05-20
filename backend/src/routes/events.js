@@ -63,13 +63,21 @@ module.exports = async function (fastify) {
     return { message: "updated", id };
   });
 
-  // DELETE
-  fastify.delete("/events/:id", async (request) => {
+  // Fix — wrap in try/catch to see the actual error
+  fastify.delete("/events/:id", async (request, reply) => {
     console.log("DELETE ID:", request.params.id);
     const { id } = request.params;
-
-    await pool.query("DELETE FROM events_entries WHERE id=?", [id]);
-
-    return { message: "deleted", id };
+    try {
+      const [result] = await pool.query(
+        "DELETE FROM events_entries WHERE id=?",
+        [id],
+      );
+      console.log("Affected rows:", result.affectedRows);
+      return { message: "deleted", id };
+    } catch (err) {
+      console.error("DELETE ERROR:", err.message);
+      reply.code(500);
+      return { message: err.message };
+    }
   });
 };
