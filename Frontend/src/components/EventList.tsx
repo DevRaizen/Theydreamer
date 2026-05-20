@@ -51,9 +51,11 @@ export default function EventList({ events, selected, onSelect, onEdit, onDelete
           className={`
             group rounded-xl border cursor-pointer transition-all duration-200
             animate-fade-up
-            ${selected?.id === ev.id
-              ? "border-amber-pin bg-amber-pin/10 shadow-sm"
-              : "border-ink/10 bg-white/60 hover:border-ink/25 hover:shadow-sm"}
+            ${
+              selected?.id === ev.id
+                ? "border-amber-pin bg-amber-pin/10 shadow-sm"
+                : "border-ink/10 bg-white/60 hover:border-ink/25 hover:shadow-sm"
+            }
           `}
           style={{ animationDelay: `${i * 40}ms` }}
           onClick={() => onSelect(ev)}
@@ -61,9 +63,13 @@ export default function EventList({ events, selected, onSelect, onEdit, onDelete
           <div className="px-4 py-3">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-ink truncate">{ev.title}</p>
+                <p className="font-semibold text-sm text-ink truncate">
+                  {ev.title}
+                </p>
                 {ev.description && (
-                  <p className="text-xs text-ink/50 mt-0.5 line-clamp-1">{ev.description}</p>
+                  <p className="text-xs text-ink/50 mt-0.5 line-clamp-1">
+                    {ev.description}
+                  </p>
                 )}
                 <p className="text-xs text-ink/35 mt-1 font-mono">
                   {ddToDMS(ev.lat, "lat")} &nbsp; {ddToDMS(ev.lng, "lng")}
@@ -71,14 +77,21 @@ export default function EventList({ events, selected, onSelect, onEdit, onDelete
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                 <button
-                  onClick={(e) => { e.stopPropagation(); onEdit(ev); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(ev);
+                  }}
                   className="p-1.5 rounded-md hover:bg-ink/10 text-ink/40 hover:text-ink transition-all"
                   title="Edit"
                 >
                   ✏️
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); onDelete(ev.id); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("DELETE ID:", ev.id);
+                    onDelete(ev.id);
+                  }}
                   className="p-1.5 rounded-md hover:bg-coral/10 text-ink/40 hover:text-coral transition-all"
                   title="Delete"
                 >
@@ -86,7 +99,9 @@ export default function EventList({ events, selected, onSelect, onEdit, onDelete
                 </button>
               </div>
             </div>
-            <p className="text-xs text-ink/25 mt-1">{formatDate(ev.created_at)}</p>
+            <p className="text-xs text-ink/25 mt-1">
+              {formatDate(ev.created_at)}
+            </p>
           </div>
         </li>
       ))}

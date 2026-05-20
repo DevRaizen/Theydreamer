@@ -17,36 +17,24 @@ interface EventMapProps {
   onSelect: (event: EventMapEvent) => void;
 }
 
-// Convert safely to number (🔥 FIX)
 const toNum = (v: number | string) => Number(v);
 
-// Custom marker
-const pinIcon = (active: boolean) =>
-  L.divIcon({
-    className: "",
-    html: `
-      <div style="
-        width:28px; height:36px;
-        display:flex; flex-direction:column; align-items:center;
-      ">
-        <div style="
-          width:24px; height:24px; border-radius:50% 50% 50% 0;
-          transform:rotate(-45deg);
-          background:${active ? "#e8a020" : "#0f0e0d"};
-          border:2px solid ${active ? "#f5c84a" : "#2a2825"};
-          box-shadow:0 2px 8px rgba(0,0,0,0.35);
-        "></div>
-        <div style="
-          width:2px; height:12px;
-          background:${active ? "#e8a020" : "#0f0e0d"};
-        "></div>
-      </div>`,
-    iconSize: [28, 38],
-    iconAnchor: [14, 38],
-    popupAnchor: [0, -40],
-  });
+/* FIX: resize bug */
+function ResizeMap() {
+  const map = useMap();
 
-// Fly to selected event
+  useEffect(() => {
+    const t = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+
+    return () => clearTimeout(t);
+  }, [map]);
+
+  return null;
+}
+
+/* FIX: fly to selected */
 function FlyTo({ event }: { event: EventMapEvent }) {
   const map = useMap();
 
@@ -61,22 +49,43 @@ function FlyTo({ event }: { event: EventMapEvent }) {
   return null;
 }
 
+const pinIcon = (active: boolean) =>
+  L.divIcon({
+    className: "",
+    html: `
+      <div style="width:28px;height:36px;display:flex;flex-direction:column;align-items:center;">
+        <div style="
+          width:24px;height:24px;border-radius:50% 50% 50% 0;
+          transform:rotate(-45deg);
+          background:${active ? "#e8a020" : "#0f0e0d"};
+          border:2px solid ${active ? "#f5c84a" : "#2a2825"};
+        "></div>
+        <div style="width:2px;height:12px;background:${active ? "#e8a020" : "#0f0e0d"};"></div>
+      </div>
+    `,
+    iconSize: [28, 38],
+    iconAnchor: [14, 38],
+    popupAnchor: [0, -40],
+  });
+
 export default function EventMap({
   events,
   selected,
   onSelect,
 }: EventMapProps) {
-  const defaultCenter: [number, number] = [14.5995, 120.9842]; // Manila
+  const defaultCenter: [number, number] = [14.5995, 120.9842];
 
   return (
-    <div className="w-full h-full">
+    <div className="absolute inset-0">
       <MapContainer
         center={defaultCenter}
         zoom={6}
-        className="w-full h-screen" // 🔥 FIX FULL SCREEN MAP
-        style={{ height: "100vh", width: "100%" }} // extra safety
+        className="w-full h-full"
         zoomControl={true}
       >
+        {/* FIX */}
+        <ResizeMap />
+
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -86,7 +95,6 @@ export default function EventMap({
           const lat = toNum(ev.lat);
           const lng = toNum(ev.lng);
 
-          // 🔥 prevent crash if invalid data
           if (isNaN(lat) || isNaN(lng)) return null;
 
           return (
@@ -97,26 +105,12 @@ export default function EventMap({
               eventHandlers={{ click: () => onSelect(ev) }}
             >
               <Popup>
-                <div style={{ minWidth: 180 }}>
-                  <p style={{ fontWeight: 700, fontSize: 14 }}>{ev.title}</p>
-
-                  {ev.description && (
-                    <p style={{ fontSize: 12, opacity: 0.7 }}>
-                      {ev.description}
-                    </p>
-                  )}
-
-                  <p style={{ fontSize: 11, opacity: 0.6 }}>
-                    {ddToDMS(lat, "lat")}
-                    <br />
-                    {ddToDMS(lng, "lng")}
-                  </p>
-
-                  {/* 🔥 FIXED toFixed error */}
-                  <p style={{ fontSize: 11, opacity: 0.6 }}>
-                    {lat.toFixed(6)}, {lng.toFixed(6)}
-                  </p>
-                </div>
+                <b>{ev.title}</b>
+                <p>{ev.description}</p>
+                <small>
+                  {ddToDMS(lat, "lat")} <br />
+                  {ddToDMS(lng, "lng")}
+                </small>
               </Popup>
             </Marker>
           );

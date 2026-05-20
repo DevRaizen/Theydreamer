@@ -1,8 +1,3 @@
-/**
- * coordConverter.js
- * Utilities to parse and convert coordinate formats.
- * Mirrors the logic in python/db_alter_coords.py.
- */
 
 /**
  * Convert DMS parts to Decimal Degrees.

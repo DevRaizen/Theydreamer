@@ -26,9 +26,9 @@ async function request(method: string, path: string, body?: any) {
 
 export const api = {
   getEvents: () => request("GET", "/events"),
-  getEvent: (id: number) => request("GET", `/events/${id}`),
+  getEvent: (id: string | number) => request("GET", `/events/${id}`),
   createEvent: (payload: any) => request("POST", "/events", payload),
-  updateEvent: (id: number, payload: any) =>
+  updateEvent: (id: string | number, payload: any) =>
     request("PUT", `/events/${id}`, payload),
-  deleteEvent: (id: number) => request("DELETE", `/events/${id}`),
+  deleteEvent: (id: string | number) => request("DELETE", `/events/${id}`),
 };

@@ -48,6 +48,8 @@ module.exports = async function (fastify) {
 
   // UPDATE
   fastify.put("/events/:id", async (request) => {
+    console.log("UPDATE ID:", request.params.id);
+    console.log("BODY:", request.body);
     const { id } = request.params;
     const { title, description, lat, lng } = request.body;
 
@@ -63,6 +65,7 @@ module.exports = async function (fastify) {
 
   // DELETE
   fastify.delete("/events/:id", async (request) => {
+    console.log("DELETE ID:", request.params.id);
     const { id } = request.params;
 
     await pool.query("DELETE FROM events_entries WHERE id=?", [id]);
