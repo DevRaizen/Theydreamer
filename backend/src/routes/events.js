@@ -1,5 +1,5 @@
 const pool = require("../db");
-
+const { encrypt } = require("../utils/encrypt");
 module.exports = async function (fastify) {
   // GET ALL
   fastify.get("/events", async (request, reply) => {
@@ -7,7 +7,7 @@ module.exports = async function (fastify) {
       const [rows] = await pool.query(
         "SELECT * FROM events_entries ORDER BY created_at DESC",
       );
-      return rows;
+      return { payload: encrypt(rows) }; 
     } catch (err) {
       fastify.log.error(err);
       reply.code(500);
@@ -24,7 +24,7 @@ module.exports = async function (fastify) {
       [id],
     );
 
-    return rows[0] || null;
+    return { payload: encrypt(rows[0] || null) };
   });
 
   // CREATE
@@ -36,14 +36,13 @@ module.exports = async function (fastify) {
        VALUES (?, ?, ?, ?)`,
       [title, description, lat, lng],
     );
+    const [rows] = await pool.query(
+      // ← fetch it
+      "SELECT id, title, description, lat, lng, created_at FROM events_entries WHERE id = ?",
+      [result.insertId],
+    );
 
-    return {
-      id: result.insertId,
-      title,
-      description,
-      lat,
-      lng,
-    };
+   return { payload: encrypt(rows[0]) };
   });
 
   // UPDATE

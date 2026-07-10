@@ -1,3 +1,4 @@
+
 const fastify = require("fastify")({ logger: true });
 const cors = require("@fastify/cors");
 require("dotenv").config();
@@ -10,7 +11,7 @@ fastify.register(cors, {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 });
 
-// IMPORTANT: prefix = /api
+
 fastify.register(eventRoutes, { prefix: "/api" });
 
 const start = async () => {
